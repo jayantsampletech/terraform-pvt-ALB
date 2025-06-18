@@ -37,4 +37,8 @@ resource "aws_instance" "ApacheServer" {
   tags = {
     Name = "ApacheServer"
   }
+  depends_on = [
+    aws_nat_gateway.example,
+    aws_route_table.ap-south-1-CICDprivateRT
+  ]
 }

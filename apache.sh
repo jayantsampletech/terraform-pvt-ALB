@@ -28,4 +28,3 @@ cat <<EOF | sudo tee /var/www/html/index.html > /dev/null
 </html>
 sleep 120
 EOF
-
