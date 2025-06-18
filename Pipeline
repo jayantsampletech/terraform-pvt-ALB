@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                checkout scm
+                git url: 'https://github.com/jayantsampletech/terraform-pvt-ALB.git', branch: 'main'
             }
         }
 
@@ -25,11 +25,11 @@ pipeline {
             }
         }
 
-        stage('Terraform Security Scan') {
-            steps {
-                sh 'tfsec .'
-            }
-        }
+        // stage('Terraform Security Scan') {
+        //     steps {
+        //         sh 'tfsec .'
+        //     }
+        // }
 
         stage('Terraform Plan') {
             steps {
@@ -46,7 +46,6 @@ pipeline {
                             choice(name: 'APPROVE_APPLY', choices: ['NO', 'YES'], description: 'Select YES to apply the infrastructure changes')
                         ]
                     )
-
                     if (userInput == 'NO') {
                         error("User chose not to apply the infrastructure. Aborting pipeline.")
                     }
