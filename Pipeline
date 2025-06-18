@@ -1,0 +1,72 @@
+pipeline {
+    agent any
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Terraform Init') {
+            steps {
+                sh 'terraform init'
+            }
+        }
+
+        stage('Terraform FMT') {
+            steps {
+                sh 'terraform fmt -check -recursive'
+            }
+        }
+
+        stage('Terraform Lint') {
+            steps {
+                sh 'tflint'
+            }
+        }
+
+        stage('Terraform Security Scan') {
+            steps {
+                sh 'tfsec .'
+            }
+        }
+
+        stage('Terraform Plan') {
+            steps {
+                sh 'terraform plan -out=tfplan'
+            }
+        }
+
+        stage('Manual Approval') {
+            steps {
+                script {
+                    def userInput = input(
+                        id: 'ProceedToApply', message: 'Do you want to apply this Terraform plan?',
+                        parameters: [
+                            choice(name: 'APPROVE_APPLY', choices: ['NO', 'YES'], description: 'Select YES to apply the infrastructure changes')
+                        ]
+                    )
+
+                    if (userInput == 'NO') {
+                        error("User chose not to apply the infrastructure. Aborting pipeline.")
+                    }
+                }
+            }
+        }
+
+        stage('Terraform Apply') {
+            steps {
+                sh 'terraform apply tfplan'
+            }
+        }
+    }
+
+    post {
+        failure {
+            echo 'Pipeline failed or aborted!'
+        }
+        success {
+            echo 'Infrastructure successfully applied.'
+        }
+    }
+}
