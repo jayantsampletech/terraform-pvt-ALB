@@ -21,9 +21,3 @@ variable "INSTANCE_TYPE" {
   default     = "t2.small"
   type        = string
 }
-
-variable "SECRETKEY" {
-  description = "secret key to be used "
-  default     = "AKIA6ELKOAUBTIXJ5SOM"
-  type        = string
-}
